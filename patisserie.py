@@ -9,10 +9,6 @@ class Commis(threading.Thread, ABC):
         threading.Thread.__init__(self)
         self.nom = nom
 
-    @abstractmethod
-    def run(self):
-        pass
-
     def say(self, message):
         print(f"[{self.nom}] {message}")
 
