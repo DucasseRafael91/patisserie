@@ -1,7 +1,7 @@
 import threading
 import time
 import math
-from abc import ABC, abstractmethod
+from abc import ABC
 
 
 class Commis(threading.Thread, ABC):
@@ -11,6 +11,7 @@ class Commis(threading.Thread, ABC):
 
     def dire(self, message):
         print(f"[{self.nom}] {message}")
+
 
 class BatteurOeufs(Commis):
     def __init__(self, nom, nb_oeufs):
@@ -43,6 +44,7 @@ class FondeurChocolat(Commis):
             self.dire(f"Je mélange {self.quantite} g de chocolat, tour n°{no_tour}")
             time.sleep(1)
 
+
 class Ingredient(threading.Thread, ABC):
     def __init__(self, nom, quantite, unite):
         threading.Thread.__init__(self)
@@ -50,17 +52,31 @@ class Ingredient(threading.Thread, ABC):
         self.quantite = quantite
         self.unite = unite
 
+
 class Oeuf(Ingredient):
     def __init__(self, nom, quantite, unite):
         super().__init__(nom, quantite, unite)
+
 
 class Chocolat(Ingredient):
     def __init__(self, nom, quantite, unite):
         super().__init__(nom, quantite, unite)
 
 
+class Appareil:
+    def __init__(self, nom):
+        self.nom = nom
+        self.ingredients = []
 
+    def ajouter(self, ingredient):
+        """Ajoute un ingrédient (objet Ingredient)."""
+        self.ingredients.append(ingredient)
 
+    def melanger(self):
+        """Simule un mélange homogène."""
+        print(f"\nJe mélange soigneusement l'appareil '{self.nom}' pour obtenir une préparation homogène…")
+        time.sleep(2)
+        print(f"L'appareil '{self.nom}' est prêt.\n")
 
 
 if __name__ == "__main__":
@@ -74,3 +90,13 @@ if __name__ == "__main__":
     fondeur.join()
 
     print("\nJe peux à présent incorporer le chocolat aux oeufs")
+
+    # Création des ingrédients correspondants
+    oeufs = Oeuf("œufs battus", 6, "unités")
+    chocolat = Chocolat("chocolat fondu", 200, "g")
+
+    appareil = Appareil("Base Gateau au chocolat ")
+    appareil.ajouter(oeufs)
+    appareil.ajouter(chocolat)
+    appareil.melanger()
+
