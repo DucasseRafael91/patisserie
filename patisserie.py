@@ -93,23 +93,29 @@ class Recipient:
 if __name__ == "__main__":
 
     oeufs = Oeuf("oeuf fermier", 6, "unités")
-    chocolat = Chocolat("chocolat patissier", 200, "g")
+    chocolat_patissier = Chocolat("chocolat patissier", 200, "g")
+    chocolat_noir = Chocolat("chocolat noir", 100, "g")
 
     recipient_batteur = Recipient("Casserole", oeufs)
-    recipient_fondeur = Recipient("Bol en Inox A", chocolat)
+    recipient_fondeurA = Recipient("Bol en Inox A", chocolat_patissier)
+    recipient_fondeurB = Recipient("Bol en Inox B", chocolat_noir)
 
     batteur = BatteurOeufs("Pierre", 6, recipient_batteur)
-    fondeur = FondeurChocolat("Marie", 200, recipient_fondeur)
+    fondeurA = FondeurChocolat("Marie", 200, recipient_fondeurA)
+    fondeurB = FondeurChocolat("Lucas", 200, recipient_fondeurB)
 
     batteur.start()
-    fondeur.start()
+    fondeurA.start()
+    fondeurB.start()
 
     batteur.join()
-    fondeur.join()
+    fondeurA.join()
+    fondeurB.join()
 
     print("\nJe peux à présent incorporer le chocolat aux oeufs")
 
-    appareil = Appareil("Base Gateau au chocolat ")
+    appareil = Appareil("Base Gateau au chocolat noir et patissier")
     appareil.ajouter(oeufs)
-    appareil.ajouter(chocolat)
+    appareil.ajouter(chocolat_patissier)
+    appareil.ajouter(chocolat_noir)
     appareil.melanger()
