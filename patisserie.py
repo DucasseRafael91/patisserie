@@ -5,29 +5,30 @@ from abc import ABC
 
 
 class Commis(threading.Thread, ABC):
-    def __init__(self, nom):
+    def __init__(self, nom, recipient):
         threading.Thread.__init__(self)
         self.nom = nom
+        self.recipient = recipient
 
     def dire(self, message):
-        print(f"[{self.nom}] {message}")
+        print(f"[{self.nom} - {self.recipient.nom}] {message}")
 
 
 class BatteurOeufs(Commis):
-    def __init__(self, nom, nb_oeufs):
-        super().__init__(nom)
+    def __init__(self, nom, nb_oeufs, recipient):
+        super().__init__(nom, recipient)
         self.nb_oeufs = nb_oeufs
 
     def run(self):
         nb_tours = self.nb_oeufs * 8
         for no_tour in range(1, nb_tours + 1):
-            self.dire(f"Je bats les {self.nb_oeufs} oeufs, tour n°{no_tour}")
+            self.dire(f"Je bats les {self.nb_oeufs} {self.recipient.contenu.nom}, tour n°{no_tour}")
             time.sleep(0.5)
 
 
 class FondeurChocolat(Commis):
-    def __init__(self, nom, quantite):
-        super().__init__(nom)
+    def __init__(self, nom, quantite, recipient):
+        super().__init__(nom, recipient)
         self.quantite = quantite  # en grammes
 
     def run(self):
@@ -35,13 +36,13 @@ class FondeurChocolat(Commis):
         time.sleep(8)
         self.dire("Je verse l'eau dans une casserole")
         time.sleep(2)
-        self.dire("J'y pose le bol rempli de chocolat")
+        self.dire(f"J'y pose le bol rempli de {self.recipient.contenu.nom}")
         time.sleep(1)
 
         nb_tours = math.ceil(self.quantite / 10)
 
         for no_tour in range(1, nb_tours + 1):
-            self.dire(f"Je mélange {self.quantite} g de chocolat, tour n°{no_tour}")
+            self.dire(f"Je mélange {self.quantite} g de {self.recipient.contenu.nom}, tour n°{no_tour}")
             time.sleep(1)
 
 
@@ -74,14 +75,30 @@ class Appareil:
 
     def melanger(self):
         """Simule un mélange homogène."""
-        print(f"\nJe mélange soigneusement l'appareil '{self.nom}' pour obtenir une préparation homogène…")
+        print(f"\nJe mélange  '{self.nom}' pour obtenir une préparation homogène…")
         time.sleep(2)
         print(f"L'appareil '{self.nom}' est prêt.\n")
 
 
+class Recipient:
+    def __init__(self, nom, contenu):
+        self.nom = nom
+        self.contenu = contenu
+
+    def ajouter(self, contenu):
+        self.contenu = contenu
+
+
 if __name__ == "__main__":
-    batteur = BatteurOeufs("Pierre", 6)
-    fondeur = FondeurChocolat("Marie", 200)
+
+    oeufs = Oeuf("Oeuf", 6, "unités")
+    chocolat = Chocolat("chocolat fondu", 200, "g")
+
+    recipient_batteur = Recipient("Casserole", oeufs)
+    recipient_fondeur = Recipient("Bol en Inox", chocolat)
+
+    batteur = BatteurOeufs("Pierre", 6, recipient_batteur)
+    fondeur = FondeurChocolat("Marie", 200, recipient_fondeur)
 
     batteur.start()
     fondeur.start()
@@ -91,12 +108,7 @@ if __name__ == "__main__":
 
     print("\nJe peux à présent incorporer le chocolat aux oeufs")
 
-    # Création des ingrédients correspondants
-    oeufs = Oeuf("œufs battus", 6, "unités")
-    chocolat = Chocolat("chocolat fondu", 200, "g")
-
     appareil = Appareil("Base Gateau au chocolat ")
     appareil.ajouter(oeufs)
     appareil.ajouter(chocolat)
     appareil.melanger()
-
