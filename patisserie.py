@@ -36,13 +36,14 @@ class FondeurChocolat(Commis):
         time.sleep(8)
         self.dire("Je verse l'eau dans une casserole")
         time.sleep(2)
-        self.dire(f"J'y pose le bol rempli de {self.recipient.contenu.nom}")
+        self.dire(f"J'y pose le {self.recipient.nom} rempli de {self.recipient.contenu.nom}")
         time.sleep(1)
 
         nb_tours = math.ceil(self.quantite / 10)
 
         for no_tour in range(1, nb_tours + 1):
-            self.dire(f"Je mélange {self.quantite} g de {self.recipient.contenu.nom}, tour n°{no_tour}")
+            self.dire(f"Je mélange {self.quantite} {self.recipient.contenu.unite} de {self.recipient.contenu.nom} "
+                      f"tour n°{no_tour}")
             time.sleep(1)
 
 
@@ -91,11 +92,11 @@ class Recipient:
 
 if __name__ == "__main__":
 
-    oeufs = Oeuf("Oeuf", 6, "unités")
-    chocolat = Chocolat("chocolat fondu", 200, "g")
+    oeufs = Oeuf("oeuf fermier", 6, "unités")
+    chocolat = Chocolat("chocolat patissier", 200, "g")
 
     recipient_batteur = Recipient("Casserole", oeufs)
-    recipient_fondeur = Recipient("Bol en Inox", chocolat)
+    recipient_fondeur = Recipient("Bol en Inox A", chocolat)
 
     batteur = BatteurOeufs("Pierre", 6, recipient_batteur)
     fondeur = FondeurChocolat("Marie", 200, recipient_fondeur)
