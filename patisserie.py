@@ -13,6 +13,12 @@ class Commis(threading.Thread, ABC):
     def run(self):
         pass
 
+class Ingredient(threading.Thread, ABC):
+    def __init__(self, nom, quantite, unite):
+        threading.Thread.__init__(self)
+        self.nom = nom
+        self.quantite = quantite
+        self.unite = unite
 
 class BatteurOeufs(Commis):
     def __init__(self, nom, nb_oeufs):
@@ -30,6 +36,14 @@ class FondeurChocolat(Commis):
     def __init__(self, nom, quantite):
         super().__init__(nom)
         self.quantite = quantite  # en grammes
+
+    class Oeuf(Ingredient):
+        def __init__(self, nom, quantite, unite):
+            super().__init__(nom, quantite, unite)
+
+    class Chocolat(Ingredient):
+        def __init__(self, nom, quantite, unite):
+            super().__init__(nom, quantite, unite)
 
     def run(self):
         print(f"[{self.nom}] Je mets de l'eau à chauffer dans une bouilloire")
