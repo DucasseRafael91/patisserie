@@ -4,10 +4,17 @@ import math
 from abc import ABC, abstractmethod
 
 
-class Commis(threading.Thread, ABC):
-    def __init__(self, nom):
-        threading.Thread.__init__(self)
+class Recipient:
+    def __init__(self, nom, contenu=None):
         self.nom = nom
+        self.contenu = contenu if contenu is not None else []
+
+
+class Commis(threading.Thread, ABC):
+    def __init__(self, nom, recipient: Recipient):
+        super().__init__()
+        self.nom = nom
+        self.recipient = recipient
 
     @abstractmethod
     def run(self):
@@ -16,18 +23,13 @@ class Commis(threading.Thread, ABC):
 
 class Ingredient(threading.Thread, ABC):
     def __init__(self, nom, quantite, unite):
-        threading.Thread.__init__(self)
+        super().__init__()
         self.nom = nom
         self.quantite = quantite
         self.unite = unite
 
 
 class Appareil:
-    """
-    Un appareil représente un mélange homogène d'ingrédients
-    avant cuisson ou turbinage.
-    """
-
     def __init__(self, nom):
         self.nom = nom
         self.ingredients = []
@@ -36,14 +38,13 @@ class Appareil:
         self.ingredients.append(ingredient)
 
     def get_ingredients(self):
-        return self.ingredients[:]
+        return self.ingredients
 
 
 class BatteurOeufs(Commis):
-    def __init__(self, nom, nb_oeufs):
-        super().__init__(nom)
+    def __init__(self, nom, recipient, nb_oeufs):
+        super().__init__(nom, recipient)
         self.nb_oeufs = nb_oeufs
-        self.appareil = appareil
 
     def run(self):
         nb_tours = self.nb_oeufs * 8
@@ -53,24 +54,15 @@ class BatteurOeufs(Commis):
 
 
 class FondeurChocolat(Commis):
-    class Oeuf(Ingredient):
-        def __init__(self, quantite):
-            super().__init__("Œuf", quantite, "pièces")
-
-    class Chocolat(Ingredient):
-        def __init__(self, quantite):
-            super().__init__("Chocolat", quantite, "g")
-
-    def __init__(self, nom, quantite, appareil=None):
-        super().__init__(nom)
+    def __init__(self, nom, quantite, recipient):
+        super().__init__(nom, recipient)
         self.quantite = quantite
-        self.appareil = appareil
 
     def run(self):
         print(f"[{self.nom}] Je mets de l'eau à chauffer dans une bouilloire")
-        time.sleep(8)
-        print(f"[{self.nom}] Je verse l'eau dans une casserole")
         time.sleep(2)
+        print(f"[{self.nom}] Je verse l'eau dans une casserole")
+        time.sleep(1)
         print(f"[{self.nom}] J'y pose le bol rempli de chocolat")
         time.sleep(1)
 
@@ -78,39 +70,35 @@ class FondeurChocolat(Commis):
 
         for no_tour in range(1, nb_tours + 1):
             print(f"[{self.nom}] Je mélange {self.quantite} g de chocolat, tour n°{no_tour}")
-            time.sleep(1)
+            time.sleep(0.8)
 
 
 class Oeuf(Ingredient):
-    def __init__(self, nom, quantite, unite):
-        super().__init__(nom, quantite, unite)
+    pass
 
 
 class Chocolat(Ingredient):
-    def __init__(self, nom, quantite, unite):
-        super().__init__(nom, quantite, unite)
+    pass
 
 
 if __name__ == "__main__":
-    # Création d'un appareil
-    appareil = Appareil("Appareil chocolat-œufs")
+    # Création des récipients
+    casserolle_fer = Recipient("Casserolle en fer", [])
+    casserolle_inox = Recipient("Casserolle en inox", [])
+    bol = Recipient("Bol en Inox", [])
 
     # Commis
-    batteur = BatteurOeufs("Jean", 6)
-    fondeur = FondeurChocolat("Marie", 200)
+    batteur = BatteurOeufs("Jean", bol, 6)
+    fondeurA = FondeurChocolat("Marie", 200, casserolle_fer)
+    fondeurB = FondeurChocolat("Pierre", 100, casserolle_inox)
 
     # Lancement
     batteur.start()
-    fondeur.start()
+    fondeurA.start()
+    fondeurB.start()
 
     batteur.join()
-    fondeur.join()
+    fondeurA.join()
+    fondeurB.join()
 
     print("\nJe peux à présent incorporer le chocolat aux œufs")
-
-    #oeuf = Oeuf("Oeufs fermiers", 6, "pièces")
-    #chocolat = Chocolat("Chocolat noir", 200, "g")
-    #appareil.ajouter_ingredient(oeuf)
-    #appareil.ajouter_ingredient(chocolat)
-    #for ingredient in appareil.get_ingredients():
-    #   print(f"- {ingredient.quantite} {ingredient.unite} de {ingredient.nom}")
